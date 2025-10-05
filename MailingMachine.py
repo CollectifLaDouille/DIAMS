@@ -122,24 +122,33 @@ class MailingMachine:
     def __login(self):
         self.__server = smtplib.SMTP(self.__ids.SMTP_SERVER, self.__ids.SMTP_PORT)
         self.__server.starttls()
-        self.__server.login(self.__ids.MAIL_ADDRESS, self.__ids.MAIL_PASSWORD)
-        sleep(5)
+        self.__server.login(self.__ids.SENDER_EMAIL, self.__ids.SENDER_EMAIL_PASSWORD)
 
     def __logout(self):
-        self.__server.quit()
+        if self.__test_connection():
+            self.__server.quit()
+
+    def __test_connection(self):
+        try:
+            status = self.__server.noop()[0]
+        except smtplib.SMTPServerDisconnected:
+            status = -1
+        return True if status == 250 else False
 
     def __send(self, subject: str, body: str, to_email: str) -> int:
         msg = MIMEMultipart()
-        msg['From'] = self.__ids.mail_address
+        msg['From'] = self.__ids.SENDER_EMAIL
         msg['To'] = to_email
         msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'html'))
 
         errors = 0
         try:
-            msg.attach(MIMEText(body, 'html'))
+            if not self.__test_connection():
+                self.__login()
             self.__server.send_message(msg)
             logging.info(f"Email successfully sent to {to_email}")
-        except Exception as e:
+        except smtplib.SMTPException as e:
             logging.error(f"Email failure ! {to_email}: {str(e)}")
             errors = 1
 
@@ -160,6 +169,7 @@ class MailingMachine:
             printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
         """
         total = len(iterable)
+        iterable = iterable.iterrows()  # So it works on dataframes
 
         # Progress Bar Printing Function
         def printProgressBar(iteration):
@@ -182,8 +192,7 @@ class MailingMachine:
         self.__login()
 
         errors = 0
-        for idx in MailingMachine.__progressBar(dataframe, prefix='Envoi en cours :'):
-            p = dataframe[idx]
+        for _, p in MailingMachine.__progressBar(dataframe, prefix='Envoi en cours :'):
             w = WorkshopSlot.get_workshop_from_name(self.__workshops, p[SELECTED_WORKSHOP])
 
             if w is not None:
@@ -200,6 +209,7 @@ class MailingMachine:
                 body = body.format(**p)
 
             errors += self.__send(subject, body, p[EMAIL])
+            sleep(.1)
 
         self.__logout()
 
