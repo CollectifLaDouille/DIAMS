@@ -75,6 +75,7 @@ class Participant:
         return self.__current_choice is not None
 
     @property
-    def list(self) -> Tuple[str, str, bool, WorkshopSlot, int]:
-        return self.name, self.email, self.is_preferred, self.workshop, self.__current_choice
+    def list(self) -> Tuple[str, str, bool, str, int]:
+        workshop_name = None if self.workshop is None else self.workshop.name
+        return self.name, self.email, self.is_preferred, workshop_name, self.__current_choice
 
