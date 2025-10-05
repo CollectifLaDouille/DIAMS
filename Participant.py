@@ -1,14 +1,12 @@
 from functools import total_ordering
-from typing import Dict, Tuple
+from typing import Dict, Union
 
-from Configuration import CHOICE, EMAIL, PARTICIPANT_NAME, SELECTED_WORKSHOP, PREFERRED
+from Configuration import CHOICE, EMAIL, PARTICIPANT_NAME, SELECTED_WORKSHOP, PREFERRED, UID
 from WorkshopSlot import WorkshopSlot
 
 
 @total_ordering
 class Participant:
-
-    LIST_HEADER = (PARTICIPANT_NAME, EMAIL, PREFERRED, SELECTED_WORKSHOP, CHOICE)
 
     __name = ""
     __email = ""
@@ -34,6 +32,9 @@ class Participant:
 
     def __eq__(self, other):
         return self.__current_choice == other.__current_choice
+
+    def __hash__(self):
+        return hash(str(self))
 
 
     def get_workshop(self, choice: int=None) -> WorkshopSlot:
@@ -75,7 +76,7 @@ class Participant:
         return self.__current_choice is not None
 
     @property
-    def list(self) -> Tuple[str, str, bool, str, int]:
-        workshop_name = None if self.workshop is None else self.workshop.name
-        return self.name, self.email, self.is_preferred, workshop_name, self.__current_choice
+    def list(self) -> Dict[str, Union[int, str, str, bool, str, int]]:
+        return {UID: hash(self), PARTICIPANT_NAME: self.name, EMAIL: self.email, PREFERRED: self.is_preferred,
+                SELECTED_WORKSHOP: str(self.workshop), CHOICE: self.__current_choice}
 

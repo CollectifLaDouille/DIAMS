@@ -1,3 +1,4 @@
+from enum import Enum
 from pathlib import Path
 
 PRIORITY_FILE_PATH = Path('FichierTypePrio.xlsx')
@@ -13,6 +14,7 @@ UNSOLVED_SHEET_NAME = "Sans ateliers"
 WORKSHOP_NAME = "Créneaux"
 DESCRIPTION = "Description"
 CAPACITY = "Places"
+UID = "UID"
 PARTICIPANT_NAME = "Prénom"
 EMAIL = "Email"
 CHOICE = "Voeu"
@@ -21,10 +23,11 @@ SELECTED_WORKSHOP = "Atelier attribué"
 SEATS_TAKEN = "Places prises"
 FREE_SEATS = "Places libres"
 
-RANDOM_SEED = ""
+RANDOM_SEED = "douille"
 
-SMTP_SERVER = ""
-SMTP_PORT = 587
-SENDER_EMAIL = ""
-SENDER_EMAIL_PASSWORD = ""
+class Ids(Enum):
+    SMTP_SERVER = ""
+    SMTP_PORT = 587
+    SENDER_EMAIL = ""
+    SENDER_EMAIL_PASSWORD = ""
 

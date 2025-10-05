@@ -64,11 +64,22 @@ def get_dataframes() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
 
 
-def write_to_workbook(workshops_df: pd.DataFrame, pleased_participants_df: pd.DataFrame, sad_participants_df: pd.DataFrame):
+def write_to_workbook(workshops_df: pd.DataFrame, pleased_df: pd.DataFrame, sad_df: pd.DataFrame):
     #TODO: create file
     with pd.ExcelWriter(OUTPUT_FILE_PATH, engine='openpyxl', mode='a') as writer:
 
         workshops_df.to_excel(writer, sheet_name=WORKSHOP_SHEET_NAME, index=False)
-        pleased_participants_df.to_excel(writer, sheet_name=SOLVED_SHEET_NAME, index=False)
-        sad_participants_df.to_excel(writer, sheet_name=UNSOLVED_SHEET_NAME, index=False)
+        pleased_df.to_excel(writer, sheet_name=SOLVED_SHEET_NAME, index=False)
+        sad_df.to_excel(writer, sheet_name=UNSOLVED_SHEET_NAME, index=False)
+
+def read_from_workbook() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    # Read workbook from file
+    output_workbook = pd.ExcelFile(OUTPUT_FILE_PATH)
+
+    # Select specific sheets, store them in dataframes
+    workshops_df = pd.read_excel(output_workbook, sheet_name=WORKSHOP_SHEET_NAME)
+    pleased_participants_df = pd.read_excel(output_workbook, sheet_name=SOLVED_SHEET_NAME)
+    sad_participants_df = pd.read_excel(output_workbook, sheet_name=UNSOLVED_SHEET_NAME)
+
+    return workshops_df, pleased_participants_df, sad_participants_df
 

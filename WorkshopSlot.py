@@ -1,13 +1,11 @@
-from typing import List
+from typing import List, Union, Dict
 
 from typing_extensions import Self
 
-from Configuration import WORKSHOP_NAME, SEATS_TAKEN, CAPACITY, FREE_SEATS
+from Configuration import WORKSHOP_NAME, SEATS_TAKEN, CAPACITY, FREE_SEATS, DESCRIPTION
 
 
 class WorkshopSlot:
-
-    LIST_HEADER = (WORKSHOP_NAME, CAPACITY, SEATS_TAKEN, FREE_SEATS)
 
     __name = ""
     __description = ""
@@ -74,8 +72,9 @@ class WorkshopSlot:
         return self.__seats_taken >= self.capacity
 
     @property
-    def list(self):
-        return self.name, self.real_capacity, self.seats_taken, self.real_capacity - self.seats_taken
+    def list(self) -> Dict[str, Union[str, str, int, int, int]]:
+        return {WORKSHOP_NAME: self.name, DESCRIPTION: self.description, CAPACITY: self.real_capacity,
+                SEATS_TAKEN: self.seats_taken, FREE_SEATS: self.real_capacity - self.seats_taken}
 
 
     @staticmethod
