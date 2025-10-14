@@ -6,7 +6,7 @@ from Configuration import PRIORITY_FILE_PATH, STANDARD_FILE_PATH, WORKSHOP_SHEET
     WORKSHOP_NAME, DESCRIPTION, CAPACITY, PARTICIPANT_NAME, EMAIL, UNSOLVED_SHEET_NAME, \
     SOLVED_SHEET_NAME, OUTPUT_FILE_PATH
 from Participant import Participant
-from WorkshopSlot import WorkshopSlot
+from WorkshopSlot import WorkshopSlot, get_workshop_from_name
 
 
 def read_and_convert_from_workbook() -> Tuple[List[WorkshopSlot], List[Participant], List[Participant], int]:
@@ -36,7 +36,7 @@ def convert_participants(participants_df: pd.DataFrame, workshops: List[Workshop
         choices = {}
         for choice in range(1, max_choices + 1):
             w_name = p.get(f'{CHOICE} {choice}', None)
-            choices[choice] = WorkshopSlot.get_workshop_from_name(workshops, w_name)
+            choices[choice] = get_workshop_from_name(workshops, w_name)
         participant = Participant(p[PARTICIPANT_NAME], p[EMAIL], choices, **kwargs)
         participants.append(participant)
     return participants

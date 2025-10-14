@@ -185,5 +185,7 @@ fabric.properties
 .idea
 
 
+.~lock*
 *.xlsx
+*.ods
 Configuration.py

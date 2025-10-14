@@ -8,7 +8,7 @@ from typing import List, Type
 import pandas as pd
 
 from Configuration import Ids, PREFERRED, EMAIL, SELECTED_WORKSHOP, PARTICIPANT_NAME, DESCRIPTION
-from WorkshopSlot import WorkshopSlot
+from WorkshopSlot import WorkshopSlot, get_workshop_from_name
 
 
 class MailingMachine:
@@ -193,7 +193,7 @@ class MailingMachine:
 
         errors = 0
         for _, p in MailingMachine.__progressBar(dataframe, prefix='Envoi en cours :'):
-            w = WorkshopSlot.get_workshop_from_name(self.__workshops, p[SELECTED_WORKSHOP])
+            w = get_workshop_from_name(self.__workshops, p[SELECTED_WORKSHOP])
 
             if w is not None:
                 if p[PREFERRED]:

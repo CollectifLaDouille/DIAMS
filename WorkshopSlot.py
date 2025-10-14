@@ -1,7 +1,5 @@
 from typing import List, Union, Dict
 
-from typing_extensions import Self
-
 from Configuration import WORKSHOP_NAME, SEATS_TAKEN, CAPACITY, FREE_SEATS, DESCRIPTION
 
 
@@ -28,8 +26,11 @@ class WorkshopSlot:
             return False
         return self.name == other.name
 
+    def __str__(self):
+        return self.name
+
     def __hash__(self):
-        return hash(self.name)
+        return hash(str(self))
 
 
     def set_capacity_percentage(self, capacity_percentage:float):
@@ -77,11 +78,10 @@ class WorkshopSlot:
                 SEATS_TAKEN: self.seats_taken, FREE_SEATS: self.real_capacity - self.seats_taken}
 
 
-    @staticmethod
-    def get_workshop_from_name(workshops:List[Self], name:str):
-        #TODO: go to 3.11 and change whileloop+typing+iterator (:=)
-        for workshop in workshops:
-            if workshop.name == name:
-                return workshop
-        return None
+def get_workshop_from_name(workshops:List[WorkshopSlot], name:str):
+    itr = iter(workshops)
+    while (workshop := next(itr, None)) is not None:
+        if workshop.name == name:
+            return workshop
+    return None
 
