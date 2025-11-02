@@ -10,9 +10,15 @@ from WorkshopSlot import WorkshopSlot, get_workshop_from_name
 
 
 def read_and_convert_from_workbook() -> Tuple[List[WorkshopSlot], List[Participant], List[Participant], int]:
+    """
+    Calls to `get_dataframes()`, retrieves dataframes from the two workbooks and
+    converts them into `WorkshopSlot` and `Participant` (standard+priority) objects with
+    `convert_workshops()` and `convert_participants()`.
+    :return: `WorkshopSlot`, `Participant` (priority), `Participant` (standard), number of possible choices
+    """
     workshops_df, priority_participants_df, standard_participants_df = get_dataframes()
 
-    max_choices = get_max_choices(priority_participants_df, standard_participants_df)
+    max_choices = max(get_max_choices(priority_participants_df), get_max_choices(standard_participants_df))
 
     # Convert all three dataframes into lists of custom types
     workshops = convert_workshops(workshops_df)
@@ -23,6 +29,11 @@ def read_and_convert_from_workbook() -> Tuple[List[WorkshopSlot], List[Participa
 
 
 def convert_workshops(workshops_df: pd.DataFrame) -> List[WorkshopSlot]:
+    """
+    Convert a dataframe into a `WorkshopSlot` object, using column names from Configuration file.
+    :param workshops_df: the workshops dataframe directly read from workbook.
+    :return: `WorkshopSlot` object
+    """
     workshops = []
     for _, w in workshops_df.iterrows():
         workshopSlot = WorkshopSlot(w[WORKSHOP_NAME], w[DESCRIPTION], w[CAPACITY])
@@ -31,6 +42,14 @@ def convert_workshops(workshops_df: pd.DataFrame) -> List[WorkshopSlot]:
 
 
 def convert_participants(participants_df: pd.DataFrame, workshops: List[WorkshopSlot], max_choices: int, **kwargs) -> List[Participant]:
+    """
+    Convert a dataframe into a List of `Participant` object, using column names from Configuration file.
+    :param participants_df: the participants dataframe directly read from workbook.
+    :param workshops: the corresponding `WorkshopSlot` object.
+    :param max_choices: number of possible choices.
+    :param kwargs: used to pass additional arguments to the `Participant` object (like `preferred=True`).
+    :return: `Participant` object
+    """
     participants = []
     for _, p in participants_df.iterrows():
         choices = {}
@@ -42,15 +61,22 @@ def convert_participants(participants_df: pd.DataFrame, workshops: List[Workshop
     return participants
 
 
-def get_max_choices(priority_participants_df: pd.DataFrame, standard_participants_df: pd.DataFrame) -> int:
-    # Detect the max possible number of choices made
-    max_choices = max(sum(CHOICE in k for k in priority_participants_df.keys()),
-                      sum(CHOICE in k for k in standard_participants_df.keys()))
+def get_max_choices(participants_df: pd.DataFrame) -> int:
+    """
+    Detect the max possible number of choices made.
+    :param participants_df: the participants dataframe directly read from workbook.
+    :return: number of possible choices
+    """
+    max_choices = sum(CHOICE in k for k in participants_df.keys())
 
     return max_choices
 
 
 def get_dataframes() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Reads workbooks from the files specified in Configuration file. Convert them in DataFrame.
+    :return: three Dataframes: `workshops`, `priority_participants`, and `standard_participants`
+    """
     # Read workbook from files
     priority_workbook = pd.ExcelFile(PRIORITY_FILE_PATH)
     standard_workbook = pd.ExcelFile(STANDARD_FILE_PATH)
@@ -65,6 +91,12 @@ def get_dataframes() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
 
 def write_to_workbook(workshops_df: pd.DataFrame, pleased_df: pd.DataFrame, sad_df: pd.DataFrame):
+    """
+    Write DataFrame to workbook file, at specified sheet names in Configuration file.
+    :param workshops_df: the workshops dataframe directly read from workbook.
+    :param pleased_df: the participants that have a workshop
+    :param sad_df: the participants that does not have a workshop.
+    """
     #TODO: create ods file (not xl one)
     with pd.ExcelWriter(OUTPUT_FILE_PATH, mode='w') as writer:
 
@@ -73,6 +105,10 @@ def write_to_workbook(workshops_df: pd.DataFrame, pleased_df: pd.DataFrame, sad_
         sad_df.to_excel(writer, sheet_name=UNSOLVED_SHEET_NAME, index=False)
 
 def read_from_workbook() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Read back from output workbook file, and store the data in DataFrames (specified in Configuration file).
+    :return: three Dataframes: `workshops`, `pleased_participants`, and `sad_participants`
+    """
     # Read workbook from file
     output_workbook = pd.ExcelFile(OUTPUT_FILE_PATH)
 
