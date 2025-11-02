@@ -5,7 +5,7 @@ from MailingMachine import MailingMachine
 from WorkbookWorm import read_and_convert_from_workbook, write_to_workbook, read_from_workbook
 from stableMatchingSolver import stable_matching_solver
 
-RUN_DIAMS = False
+RUN_DIAMS = True
 SEND_EMAILS = False
 
 if __name__ == "__main__":

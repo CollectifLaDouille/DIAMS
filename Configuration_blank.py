@@ -1,9 +1,8 @@
-from enum import Enum
 from pathlib import Path
 
-PRIORITY_FILE_PATH = Path('FichierTypePrio.xlsx')
-STANDARD_FILE_PATH = Path('FichierTypeStandard.xlsx')
-OUTPUT_FILE_PATH = Path('Sortie.xlsx')
+PRIORITY_FILE_PATH = Path('FichierTypePrio.ods')
+STANDARD_FILE_PATH = Path('FichierTypeStandard.ods')
+OUTPUT_FILE_PATH = Path('Sortie.ods')
 
 PRIORITY_CAPACITY_REDUCER = .5
 STANDARD_CAPACITY_REDUCER = 1.
@@ -25,7 +24,7 @@ FREE_SEATS = "Places libres"
 
 RANDOM_SEED = "douille"
 
-class Ids(Enum):
+class Ids:
     SMTP_SERVER = ""
     SMTP_PORT = 587
     SENDER_EMAIL = ""

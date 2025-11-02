@@ -65,8 +65,8 @@ def get_dataframes() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
 
 def write_to_workbook(workshops_df: pd.DataFrame, pleased_df: pd.DataFrame, sad_df: pd.DataFrame):
-    #TODO: create file
-    with pd.ExcelWriter(OUTPUT_FILE_PATH, engine='openpyxl', mode='a') as writer:
+    #TODO: create ods file (not xl one)
+    with pd.ExcelWriter(OUTPUT_FILE_PATH, mode='w') as writer:
 
         workshops_df.to_excel(writer, sheet_name=WORKSHOP_SHEET_NAME, index=False)
         pleased_df.to_excel(writer, sheet_name=SOLVED_SHEET_NAME, index=False)
