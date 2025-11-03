@@ -109,6 +109,13 @@ class MailingMachine:
 
 
     def __init__(self, ids: Type[Ids], workshops: List[WorkshopSlot]):
+        """
+        This class will ease the email sending process.
+        Simply throw at it the participants, and it will automatically send an email choosing the correct body
+        accordingly if they have a workshop or not, and if they are preferred or not.
+        :param ids: SMTP server ids (found in the Configuration file).
+        :param workshops: List of workshop slots.
+        """
         self.__ids = ids
         self.__server = None
         self.__workshops = workshops
@@ -120,22 +127,39 @@ class MailingMachine:
 
 
     def __login(self):
+        """
+        Logs to the SMTP server.
+        """
         self.__server = smtplib.SMTP(self.__ids.SMTP_SERVER, self.__ids.SMTP_PORT)
         self.__server.starttls()
         self.__server.login(self.__ids.SENDER_EMAIL, self.__ids.SENDER_EMAIL_PASSWORD)
 
     def __logout(self):
+        """
+        Logs out the SMTP server.
+        """
         if self.__test_connection():
             self.__server.quit()
 
-    def __test_connection(self):
+    def __test_connection(self) -> bool:
+        """
+        Checks if the SMTP server is responding.
+        :return: Bool, True if the SMTP server is responding.
+        """
         try:
             status = self.__server.noop()[0]
         except smtplib.SMTPServerDisconnected:
             status = -1
         return True if status == 250 else False
 
-    def __send(self, subject: str, body: str, to_email: str) -> int:
+    def __send(self, to_email: str, subject: str, body: str) -> int:
+        """
+        Sends an email.
+        :param to_email: str, recipient email.
+        :param subject: str, subject of the email.
+        :param body: str, body of the email.
+        :return: int, number of errors encountered.
+        """
         msg = MIMEMultipart()
         msg['From'] = self.__ids.SENDER_EMAIL
         msg['To'] = to_email
@@ -193,10 +217,14 @@ class MailingMachine:
 
         errors = 0
         for _, p in MailingMachine.__progressBar(dataframe, prefix='Envoi en cours :'):
+            # With the current participant `p` :
+            # Get their workshop `w`
             w = get_workshop_from_name(self.__workshops, p[SELECTED_WORKSHOP])
 
             if w is not None:
+                # The participant does have a workshop
                 if p[PREFERRED]:
+                    # It's a priority participant
                     subject = self.PRIORITY_SUBJECT
                     body = self.PRIORITY_BODY
                 else:
@@ -208,7 +236,7 @@ class MailingMachine:
                 body = self.SAD_BODY
                 body = body.format(**p)
 
-            errors += self.__send(subject, body, p[EMAIL])
+            errors += self.__send(p[EMAIL], subject, body)
             sleep(.1)
 
         self.__logout()
