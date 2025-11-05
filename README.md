@@ -9,6 +9,7 @@ Il a été conçu par les organisateurices et ami.es de La Douille, pour répond
 
 * Python 3.13
   * pandas
+  * odfpy
 
 # Utilisation
 
