@@ -89,7 +89,6 @@ def get_dataframes() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     return workshops_df, priority_participants_df, standard_participants_df
 
 
-
 def write_to_workbook(workshops_df: pd.DataFrame, pleased_df: pd.DataFrame, sad_df: pd.DataFrame):
     """
     Write DataFrame to workbook file, at specified sheet names in Configuration file.
@@ -97,12 +96,12 @@ def write_to_workbook(workshops_df: pd.DataFrame, pleased_df: pd.DataFrame, sad_
     :param pleased_df: the participants that have a workshop
     :param sad_df: the participants that does not have a workshop.
     """
-    #TODO: create ods file (not xl one)
-    with pd.ExcelWriter(OUTPUT_FILE_PATH, mode='w') as writer:
+    with pd.ExcelWriter(OUTPUT_FILE_PATH, engine='odf', mode='w') as writer:
 
         workshops_df.to_excel(writer, sheet_name=WORKSHOP_SHEET_NAME, index=False)
         pleased_df.to_excel(writer, sheet_name=SOLVED_SHEET_NAME, index=False)
         sad_df.to_excel(writer, sheet_name=UNSOLVED_SHEET_NAME, index=False)
+
 
 def read_from_workbook() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
